@@ -34,14 +34,25 @@ const NUMBERSZCE = [
 ]
 
 class App extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+        this.result = React.createRef();
         this.state = {
             currval1: "",
             currval2: "",
             curract: 15,
             res: ""
         };
+    }
+    handleChange(e) {
+        this.setState({res: parseInt(e.target.value)})
+        if(this.state.curract === 15) {
+            this.setState({currval1: parseInt(e.target.value)});
+        }
+        else {
+            this.setState({currval2: e.target.value.substr(e.target.value.indexOf(BUTTONS.at(this.state.curract - 10).name) + 1)});
+             }
+        this.result.current.focus();
     }
 
 
@@ -54,42 +65,48 @@ class App extends React.Component {
                 this.setState({currval1: "", currval2: "", curract: 15, res: ""});
                 break;
             case 17:
+                let b =  parseInt(this.state.currval2);
+                let a =  parseInt(this.state.currval1);
                 switch (parseInt(this.state.curract)) {
                     case 10:
-                        this.setState({currval1: this.state.currval1 / this.state.currval2});
+                        this.setState({res: a / b, currval1: a / b});
                         break;
                     case 11:
-                        this.setState({currval1: this.state.currval1 + this.state.currval2});
+                        this.setState({res: a + b, currval1: a + b});
                         break;
                     case 12:
-                        this.setState({currval1: this.state.currval1 - this.state.currval2});
+                        this.setState({res: a - b, currval1: a - b});
                         break;
                     case 13:
-                        this.setState({currval1: this.state.currval1 * this.state.currval2});
+                        this.setState({res: a * b, currval1: a * b});
                         break;
                     case 14:
-                        this.setState({currval1: Math.pow(this.state.currval1, this.state.currval2)});
+                        this.setState({res: Math.pow(a, b), currval1: Math.pow(a, b)});
                         break;
                     default:
-                        this.setState({currval2: "ERROR"})
+                        this.setState({res: "ERROR"})
 
                 }
                 this.setState({currval2: "", curract: 15})
+                this.result.current.focus();
                 break;
             default:
                 if (parseInt(value) > 9) {
                     this.setState({curract: value});
+                    this.setState({res: this.state.res + BUTTONS.at(value - 10).name});
+                    this.result.current.focus();
                     break;
                 }
                 if (this.state.curract === 15) {
                     this.setState({currval1: parseInt(this.state.currval1.toString() + value)});
+
                 } else {
                     this.setState({currval2: parseInt(this.state.currval2.toString() + value)});
                 }
+                this.setState({res: this.state.res + value});
+                this.result.current.focus();
         }
     }
-
-
 
 render() {
     return(
@@ -100,8 +117,10 @@ render() {
             <h3>..and here we go again</h3>
             </div>
             <div  className="container">
-                <div className="input"><input value={this.state.currval1 + " " + BUTTONS.at(this.state.curract - 10).name + " " + this.state.currval2}
-                    /* {onChange={this.handleChange}}*//>
+                <div className="input"><input autoFocus={true} ref={this.result} value={this.state.res}
+                     onChange={(e) => {
+                         this.handleChange(e)
+                     }} />
                 </div>
                 <div className="keypad">
             <div className="buttons1">
